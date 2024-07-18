@@ -17,11 +17,30 @@ class MainViewModel: NSObject, ObservableObject {
     
     private let locationManager = CLLocationManager()
     
+    private var cancellables = Set<AnyCancellable>()
+
+    
     override init() {
         super.init()
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
         locationManager.requestLocation()
+        
+        let weatherSerivce = WeatherService()
+        weatherSerivce.fetchCurrentTemp(latitude: 50.45, longitude: 30.52)
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("finished")
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            } receiveValue: { weather in
+                print(weather)
+            }
+            .store(in: &cancellables)
+
+        
     }
     
     private func handleError(errorMessage: String) {
