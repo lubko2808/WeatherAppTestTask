@@ -17,7 +17,6 @@ struct MainView: View {
         
         NavigationStack(path: $path) {
             
-            
             ZStack {
                 backgroundView
                     .ignoresSafeArea()
@@ -42,15 +41,37 @@ struct MainView: View {
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
             .toolbarBackground(.hidden)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink(value: "CitySearchView") {
+                        cityButton
+                    }
+                }
+            }
 
             .alert("Error", isPresented: $viewModel.isError) {
                 Button("OK", action: {})
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
+            
+            .navigationDestination(for: String.self) { _ in
+                
+                CitySearchView()
+                
+            }
 
         }
         
+    }
+    
+    var cityButton: some View {
+        Text("city")
+            .foregroundColor(.black)
+            .padding(.horizontal)
+            .padding(.vertical, 6)
+            .background(.white)
+            .cornerRadius(25)
     }
     
     var currentTemp: some View {
