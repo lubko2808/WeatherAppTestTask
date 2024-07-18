@@ -8,9 +8,8 @@
 import Foundation
 import Combine
 
-class WeatherService {
+final class WeatherService {
     
-    private let header = (key: "X-RapidAPI-Key", value: "9a79c4044dmsh8b389b0bc50c7d1p18e755jsn08c7c63170a8")
     private var components: URLComponents
     private let jsonDecoder = JSONDecoder()
     
@@ -34,7 +33,7 @@ class WeatherService {
         }
         
         var urlRequest = URLRequest(url: url)
-        urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
+        
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .receive(on: DispatchQueue.main)
             .transformResponseToError()
@@ -57,10 +56,7 @@ class WeatherService {
         }
     
         var urlRequest = URLRequest(url: url)
-        urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
-            
-        print(urlRequest.url?.absoluteString)
-        
+
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .receive(on: DispatchQueue.main)
             .transformResponseToError()
