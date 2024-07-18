@@ -11,6 +11,7 @@
 		3E86184D2C4916AD00BE3D27 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E86184C2C4916AD00BE3D27 /* ContentView.swift */; };
 		3E86184F2C4916AE00BE3D27 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E86184E2C4916AE00BE3D27 /* Assets.xcassets */; };
 		3E8618522C4916AE00BE3D27 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3E8618512C4916AE00BE3D27 /* Preview Assets.xcassets */; };
+		3E86185A2C491B3700BE3D27 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E8618592C491B3700BE3D27 /* MainViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		3E86184C2C4916AD00BE3D27 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		3E86184E2C4916AE00BE3D27 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3E8618512C4916AE00BE3D27 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		3E8618592C491B3700BE3D27 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,8 +53,8 @@
 		3E8618492C4916AD00BE3D27 /* WeatherAppTestTask */ = {
 			isa = PBXGroup;
 			children = (
+				3E8618582C491AF900BE3D27 /* MainView */,
 				3E86184A2C4916AD00BE3D27 /* WeatherAppTestTaskApp.swift */,
-				3E86184C2C4916AD00BE3D27 /* ContentView.swift */,
 				3E86184E2C4916AE00BE3D27 /* Assets.xcassets */,
 				3E8618502C4916AE00BE3D27 /* Preview Content */,
 			);
@@ -65,6 +67,15 @@
 				3E8618512C4916AE00BE3D27 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		3E8618582C491AF900BE3D27 /* MainView */ = {
+			isa = PBXGroup;
+			children = (
+				3E86184C2C4916AD00BE3D27 /* ContentView.swift */,
+				3E8618592C491B3700BE3D27 /* MainViewModel.swift */,
+			);
+			path = MainView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -139,6 +150,7 @@
 			files = (
 				3E86184D2C4916AD00BE3D27 /* ContentView.swift in Sources */,
 				3E86184B2C4916AD00BE3D27 /* WeatherAppTestTaskApp.swift in Sources */,
+				3E86185A2C491B3700BE3D27 /* MainViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +286,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"WeatherAppTestTask/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -302,6 +315,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"WeatherAppTestTask/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
