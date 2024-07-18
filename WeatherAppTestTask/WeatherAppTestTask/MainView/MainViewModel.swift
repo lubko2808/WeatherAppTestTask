@@ -16,6 +16,8 @@ class MainViewModel: NSObject, ObservableObject {
     var errorMessage: String? = nil
     @Published var isError = false
     
+    @Published var isDataReady = false
+    
     @Published var currentCity = ""
     
     @Published var currentTemp = ""
@@ -39,7 +41,7 @@ class MainViewModel: NSObject, ObservableObject {
     private func handleError(errorMessage: String) {
         self.errorMessage = errorMessage
         self.isError.toggle()
-        self.currentCity = ""
+//        self.currentCity = ""
     }
     
     
@@ -55,6 +57,51 @@ class MainViewModel: NSObject, ObservableObject {
         self.currentTemp = currentTemp
         self.days = days
         self.weatherTypes = weatherTypes
+        
+        isDataReady = true
+    }
+    
+    private func geocoder(city: String, completion: @escaping(Double, Double) -> Void) {
+        let geocoder = CLGeocoder()
+        
+        var latitude: Double = 0
+        var longitude: Double = 0
+        
+        geocoder.geocodeAddressString(city, completionHandler: { [weak self] (placemarks, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                self.handleError(errorMessage: "Could not get information about this city")
+                return
+            }
+            
+            if let placemark = placemarks?.first, let location = placemark.location {
+                latitude = location.coordinate.latitude
+                longitude = location.coordinate.longitude
+                completion(latitude, longitude)
+            }
+        })
+    }
+    
+    func fetchWeatherForCity(cityName: String) {
+        
+        geocoder(city: cityName) { [weak self] latitude, longitude in
+            guard let self = self else { return }
+            
+            self.weatherService.fetchForecastTemp(latitude: latitude, longitude: longitude)
+                .zip(weatherService.fetchCurrentTemp(latitude: latitude, longitude: longitude))
+                .sink { completion in
+                    switch completion {
+                    case .finished:
+                        print("finished")
+                    case .failure(let error):
+                        self.handleError(errorMessage: error.localizedDescription)
+                    }
+                } receiveValue: { (forecastTempModel, currentTempModel) in
+                    self.handleData(forecastTempModel: forecastTempModel, currentTempModel: currentTempModel)
+                }
+                .store(in: &self.cancellables)
+        }
     }
     
 }
@@ -91,12 +138,12 @@ extension MainViewModel: CLLocationManagerDelegate {
         
         weatherService.fetchForecastTemp(latitude: currentLatitude, longitude: currentLongitude)
             .zip(weatherService.fetchCurrentTemp(latitude: currentLatitude, longitude: currentLongitude))
-            .sink { completion in
+            .sink { [weak self] completion in
                 switch completion {
                 case .finished:
                     print("finished")
                 case .failure(let error):
-                    self.handleError(errorMessage: error.localizedDescription)
+                    self?.handleError(errorMessage: error.localizedDescription)
                 }
             } receiveValue: { [weak self] (forecastTempModel, currentTempModel) in
                 self?.handleData(forecastTempModel: forecastTempModel, currentTempModel: currentTempModel)

@@ -13,6 +13,10 @@ struct WeatherForDay: View {
     var day: String
     var dayAndNightTemp: String
     
+    var sequenceNumber: Int
+    @State private var startAnimation = false
+    @State private var offset: CGFloat = -500
+    
     var body: some View {
         HStack {
             Image(systemName:  weatherType)
@@ -37,16 +41,14 @@ struct WeatherForDay: View {
         .background(Color.white.opacity(0.5))
         .cornerRadius(20)
         .padding(.horizontal)
-//        .offset(x: offset)
-//        .animation(.spring(response: 0.8, dampingFraction: 0.6, blendDuration: 0).delay(Double(sequenceNumber) * 0.05), value: offset)
-//        .onAppear {
-//            offset = 0
-//            print("WeatherForDay has appeared")
-//        }
-//        .onDisappear {
-//            offset = -500
-//            print("WeatherForDay has disappeared")
-//        }
+        .offset(x: offset)
+        .animation(.spring(response: 0.8, dampingFraction: 0.6, blendDuration: 0).delay(Double(sequenceNumber) * 0.05), value: offset)
+        .onAppear {
+            offset = 0
+        }
+        .onDisappear {
+            offset = -500
+        }
     }
     
 }

@@ -11,11 +11,12 @@ struct MainView: View {
     
     @StateObject private var viewModel = MainViewModel()
     
-    @State private var path = NavigationPath()
+    @State private var chosenCity: String? = nil
+    @State private var showCitySearchView = false
     
     var body: some View {
         
-        NavigationStack(path: $path) {
+        NavigationStack() {
             
             ZStack {
                 backgroundView
@@ -29,21 +30,33 @@ struct MainView: View {
                             currentTemp
                             dayAndNightTemp
                         }
+                        .animation(.linear(duration: 0.5), value: viewModel.isDataReady)
                         
                         VStack(spacing: 15) {
                             ForEach(0..<viewModel.dayAndNightTemp.count, id: \.self) { index in
-                                WeatherForDay(weatherType: viewModel.weatherTypes[index], day: viewModel.days[index], dayAndNightTemp: viewModel.dayAndNightTemp[index])
+                                WeatherForDay(
+                                    weatherType: viewModel.weatherTypes[index],
+                                    day: viewModel.days[index],
+                                    dayAndNightTemp: viewModel.dayAndNightTemp[index],
+                                    sequenceNumber: index
+                                )
                             }
                         }
                     }
                 }
+                .scrollIndicators(.never)
             }
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
             .toolbarBackground(.hidden)
+            .toolbar(viewModel.currentCity.isEmpty ? .hidden : .visible)
+            .animation(.linear(duration: 0.5), value: viewModel.currentCity.isEmpty)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink(value: "CitySearchView") {
+                    Button {
+                        chosenCity = nil
+                        showCitySearchView = true
+                    } label: {
                         cityButton
                     }
                 }
@@ -55,12 +68,14 @@ struct MainView: View {
                 Text(viewModel.errorMessage ?? "")
             }
             
-            .navigationDestination(for: String.self) { _ in
-                
-                CitySearchView()
-                
+            .sheet(isPresented: $showCitySearchView) {
+                if let chosenCity {
+                    viewModel.currentCity = chosenCity
+                    viewModel.fetchWeatherForCity(cityName: chosenCity)
+                }
+            } content: {
+                CitySearchView(chosenCity: $chosenCity)
             }
-
         }
         
     }
@@ -79,6 +94,8 @@ struct MainView: View {
             .font(.system(size: 100, weight: .medium))
             .fontDesign(.rounded)
             .foregroundColor(.white)
+            .opacity(viewModel.isDataReady ? 1 : 0)
+            .scaleEffect(viewModel.isDataReady ? 1 : 2)
     }
     
     var dayAndNightTemp: some View {
@@ -86,6 +103,8 @@ struct MainView: View {
             .font(.system(size: 25, weight: .medium))
             .fontDesign(.rounded)
             .foregroundColor(.white)
+            .opacity(viewModel.isDataReady ? 1 : 0)
+            .scaleEffect(viewModel.isDataReady ? 1 : 2)
     }
     
     private var backgroundView: some View {
