@@ -33,7 +33,7 @@ struct WeatherDataFormatter {
     func getDayAndNightTemp(forecastTempModel: ForecastTempModel) -> [String] {
         let maxTemp = forecastTempModel.daily.temperature2MMax
         let minTemp = forecastTempModel.daily.temperature2MMin
-        let dayNadNightTemp = zip(maxTemp, minTemp).map { (min, max) in
+        let dayNadNightTemp = zip(maxTemp, minTemp).map { (max, min) in
             "\(max)/\(min)\(degreeSing)"
         }
         return dayNadNightTemp
@@ -41,7 +41,7 @@ struct WeatherDataFormatter {
     
     func getWeatherTypes(weatherCodes: [Int]) -> [String] {
         
-        let weatherIcons = weatherCodes.compactMap { weatherCode in
+        let weatherIcons = weatherCodes.map { weatherCode in
             switch weatherCode {
             case let code where WeatherInterpretCodes.sunny.contains { $0 == code }: return WeatherIcon.sunny.rawValue
             case let code where WeatherInterpretCodes.partlyCloudy.contains { $0 == code }: return WeatherIcon.partlyCloudy.rawValue
@@ -49,7 +49,7 @@ struct WeatherDataFormatter {
             case let code where WeatherInterpretCodes.rain.contains { $0 == code }: return WeatherIcon.rain.rawValue
             case let code where WeatherInterpretCodes.snow.contains { $0 == code }: return WeatherIcon.snow.rawValue
             case let code where WeatherInterpretCodes.thunderstorm.contains { $0 == code }: return WeatherIcon.thunderstorm.rawValue
-            default: return nil
+            default: return WeatherIcon.unknown.rawValue
             }
         }
         

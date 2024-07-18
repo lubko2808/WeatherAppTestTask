@@ -48,6 +48,7 @@ class WeatherService {
             URLQueryItem(name: "longitude", value: String(longitude)),
             URLQueryItem(name: "daily", value: "temperature_2m_max"),
             URLQueryItem(name: "daily", value: "temperature_2m_min"),
+            URLQueryItem(name: "daily", value: "weathercode"),
             URLQueryItem(name: "forecast_days", value: "16")
         ]
         
@@ -57,13 +58,14 @@ class WeatherService {
     
         var urlRequest = URLRequest(url: url)
         urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
-
+            
+        print(urlRequest.url?.absoluteString)
+        
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .receive(on: DispatchQueue.main)
             .transformResponseToError()
             .decode(type: ForecastTempModel.self, decoder: jsonDecoder)
             .eraseToAnyPublisher()
-        
     }
     
 }

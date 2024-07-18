@@ -10,10 +10,18 @@ import Combine
 
 class MainViewModel: NSObject, ObservableObject {
     
+    private let weatherService = WeatherService()
+    private let weatherDataFormatter = WeatherDataFormatter()
+    
     var errorMessage: String? = nil
     @Published var isError = false
     
     @Published var currentCity = ""
+    
+    @Published var currentTemp = ""
+    @Published var weatherTypes: [String] = []
+    @Published var days: [String] = []
+    @Published var dayAndNightTemp: [String] = []
     
     private let locationManager = CLLocationManager()
     
@@ -25,22 +33,7 @@ class MainViewModel: NSObject, ObservableObject {
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
         locationManager.requestLocation()
-        
-        let weatherSerivce = WeatherService()
-        weatherSerivce.fetchCurrentTemp(latitude: 50.45, longitude: 30.52)
-            .sink { completion in
-                switch completion {
-                case .finished:
-                    print("finished")
-                case .failure(let error):
-                    print(error.localizedDescription)
-                }
-            } receiveValue: { weather in
-                print(weather)
-            }
-            .store(in: &cancellables)
-
-        
+       
     }
     
     private func handleError(errorMessage: String) {
@@ -49,8 +42,24 @@ class MainViewModel: NSObject, ObservableObject {
         self.currentCity = ""
     }
     
+    
+    
+    private func handleData(forecastTempModel: ForecastTempModel, currentTempModel: CurrentTempModel) {
+        print(forecastTempModel.daily.weatherCode)
+        let dayAndNightTemp = weatherDataFormatter.getDayAndNightTemp(forecastTempModel: forecastTempModel)
+        let currentTemp = String(currentTempModel.currentWeather.temperature)
+        let days = weatherDataFormatter.getDays()
+        let weatherTypes = weatherDataFormatter.getWeatherTypes(weatherCodes: forecastTempModel.daily.weatherCode)
+
+        self.dayAndNightTemp = dayAndNightTemp
+        self.currentTemp = currentTemp
+        self.days = days
+        self.weatherTypes = weatherTypes
+    }
+    
 }
 
+// MARK: - CLLocationManagerDelegate
 extension MainViewModel: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -64,6 +73,7 @@ extension MainViewModel: CLLocationManagerDelegate {
             guard let self = self else { return }
             
             if let error {
+                print("error: \(error.localizedDescription)")
                 self.handleError(errorMessage: error.localizedDescription)
                 return
             }
@@ -76,10 +86,27 @@ extension MainViewModel: CLLocationManagerDelegate {
             self.currentCity = city
         }
         
+        let currentLatitude = currentLocation.coordinate.latitude
+        let currentLongitude = currentLocation.coordinate.longitude
         
+        weatherService.fetchForecastTemp(latitude: currentLatitude, longitude: currentLongitude)
+            .zip(weatherService.fetchCurrentTemp(latitude: currentLatitude, longitude: currentLongitude))
+            .sink { completion in
+                switch completion {
+                case .finished:
+                    print("finished")
+                case .failure(let error):
+                    self.handleError(errorMessage: error.localizedDescription)
+                }
+            } receiveValue: { [weak self] (forecastTempModel, currentTempModel) in
+                self?.handleData(forecastTempModel: forecastTempModel, currentTempModel: currentTempModel)
+            }
+            .store(in: &cancellables)
+
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        print("didFailWithError")
         self.handleError(errorMessage: "Location update failed: \(error.localizedDescription)")
     }
     
