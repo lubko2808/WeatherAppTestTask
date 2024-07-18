@@ -13,7 +13,7 @@ struct WeatherDataFormatter {
         static let sunny = [0, 1]
         static let partlyCloudy = [2]
         static let cloudy = [3]
-        static let rain = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]
+        static let rain = [45, 48, 51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82]
         static let snow = [71, 73, 75, 77, 85, 86]
         static let thunderstorm = [95, 96, 99]
     }

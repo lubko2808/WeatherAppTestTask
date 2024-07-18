@@ -21,10 +21,9 @@ final class CitiesService {
         components.host = "wft-geo-db.p.rapidapi.com"
         components.path = "/v1/geo/cities"
         components.queryItems = [
-            URLQueryItem(name: "minPopulation", value: "100000"),
+            URLQueryItem(name: "minPopulation", value: "50000"),
             URLQueryItem(name: "limit", value: "10"),
             URLQueryItem(name: "namePrefix", value: nil)
-            
         ]
         
     }
