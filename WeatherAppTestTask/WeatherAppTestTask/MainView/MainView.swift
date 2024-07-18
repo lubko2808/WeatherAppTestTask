@@ -11,11 +11,12 @@ struct MainView: View {
     
     @StateObject private var viewModel = MainViewModel()
     
-    @State private var path = NavigationPath()
+    @State private var chosenCity: String? = nil
+    @State private var showCitySearchView = false
     
     var body: some View {
         
-        NavigationStack(path: $path) {
+        NavigationStack() {
             
             ZStack {
                 backgroundView
@@ -32,7 +33,11 @@ struct MainView: View {
                         
                         VStack(spacing: 15) {
                             ForEach(0..<viewModel.dayAndNightTemp.count, id: \.self) { index in
-                                WeatherForDay(weatherType: viewModel.weatherTypes[index], day: viewModel.days[index], dayAndNightTemp: viewModel.dayAndNightTemp[index])
+                                WeatherForDay(
+                                    weatherType: viewModel.weatherTypes[index],
+                                    day: viewModel.days[index],
+                                    dayAndNightTemp: viewModel.dayAndNightTemp[index]
+                                )
                             }
                         }
                     }
@@ -43,9 +48,15 @@ struct MainView: View {
             .toolbarBackground(.hidden)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink(value: "CitySearchView") {
+                    Button {
+                        showCitySearchView = true
+                    } label: {
                         cityButton
                     }
+
+//                    NavigationLink(value: "CitySearchView") {
+//                        cityButton
+//                    }
                 }
             }
 
@@ -55,11 +66,18 @@ struct MainView: View {
                 Text(viewModel.errorMessage ?? "")
             }
             
-            .navigationDestination(for: String.self) { _ in
+            .sheet(isPresented: $showCitySearchView) {
                 
-                CitySearchView()
-                
+            } content: {
+                CitySearchView(chosenCity: $chosenCity)
             }
+
+            
+//            .navigationDestination(for: String.self) { _ in
+//                
+//                CitySearchView()
+//                
+//            }
 
         }
         
