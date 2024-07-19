@@ -16,6 +16,7 @@ struct CitySearchView: View {
     @Environment(\.dismiss) var dismissView
 
     @State private var selectedRow: Int? = nil
+    @State private var isGesturesDisabled = false
 
     
     var body: some View {
@@ -37,6 +38,7 @@ struct CitySearchView: View {
                                 
                                 .scaleEffect(selectedRow == index ? 1.3 : 1)
                                 .onTapGesture {
+                                    isGesturesDisabled = true 
                                     withAnimation(.easeIn(duration: 0.2)) {
                                         selectedRow = index
                                     }
@@ -66,6 +68,7 @@ struct CitySearchView: View {
                     }
                 }
             }
+            .disabled(isGesturesDisabled)
             .navigationTitle("Add city")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarAppearance(fontSize: 25)
@@ -90,8 +93,6 @@ struct CitySearchView: View {
             }
         }
         
-        
-        
     }
 
     
@@ -115,10 +116,16 @@ struct CitySearchView: View {
     }
     
     private var backgroundView: some View {
-        Color.teal
-            .opacity(0.8)
-            .ignoresSafeArea()
-            .blur(radius: 10)
+        LinearGradient(
+            gradient: Gradient(colors: [.blue.opacity(0.6), Color.whiteBlue]),
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing)
+        .ignoresSafeArea()
+        
+//        Color.teal
+//            .opacity(0.8)
+//            .ignoresSafeArea()
+//            .blur(radius: 10)
     }
     
 }
