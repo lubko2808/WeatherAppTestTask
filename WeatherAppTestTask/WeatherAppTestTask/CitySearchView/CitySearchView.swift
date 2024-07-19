@@ -16,6 +16,7 @@ struct CitySearchView: View {
     @Environment(\.dismiss) var dismissView
 
     @State private var selectedRow: Int? = nil
+
     
     var body: some View {
         NavigationStack {
@@ -67,6 +68,7 @@ struct CitySearchView: View {
             }
             .navigationTitle("Add city")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationAppearance(fontSize: 25)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -94,14 +96,19 @@ struct CitySearchView: View {
 
     
     private var cityTextField: some View {
-        TextField("enter the name of the city", text: $viewModel.textFieldText)
+        TextField(
+            "",
+            text: $viewModel.textFieldText,
+            prompt: Text("enter the name of the city").foregroundStyle(.blue)
+        )
             .foregroundColor(.white)
             .font(.title)
             .frame(height: 46)
             .padding(.horizontal)
+            .padding(.vertical, 5)
             .overlay {
                 RoundedRectangle(cornerRadius: 20)
-                    .stroke(.white, lineWidth: 2)
+                    .stroke(.white, lineWidth: 3)
             }
             .cornerRadius(20)
             .padding()

@@ -41,6 +41,10 @@ final class CitiesService {
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .receive(on: DispatchQueue.main)
             .transformResponseToError()
+            .filter({ data in
+                print("here")
+                return true
+            })
             .decode(type: CityModel.self, decoder: jsonDecoder)
             .eraseToAnyPublisher()
     }

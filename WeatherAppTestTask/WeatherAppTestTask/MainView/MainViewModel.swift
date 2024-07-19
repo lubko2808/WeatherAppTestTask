@@ -32,8 +32,8 @@ class MainViewModel: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
        
     }
@@ -156,5 +156,6 @@ extension MainViewModel: CLLocationManagerDelegate {
         print("didFailWithError")
         self.handleError(errorMessage: "Location update failed: \(error.localizedDescription)")
     }
+    
     
 }

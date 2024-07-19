@@ -48,9 +48,7 @@ struct MainView: View {
             }
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
-            .toolbarBackground(.hidden)
-            .toolbar(viewModel.currentCity.isEmpty ? .hidden : .visible)
-            .animation(.linear(duration: 0.5), value: viewModel.currentCity.isEmpty)
+            .navigationAppearance(fontSize: 50)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -121,10 +119,4 @@ struct MainView: View {
 
 #Preview {
     MainView()
-}
-
-extension Color {
-    
-    static let myColor = Color.white
-    
 }

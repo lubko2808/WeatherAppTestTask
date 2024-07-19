@@ -17,7 +17,6 @@ extension Publisher where Output == (data: Data, response: URLResponse) {
                       response.statusCode >= 200 && response.statusCode < 300 else {
                     throw URLError(.badServerResponse)
                 }
-                
                 return data
             }
             .eraseToAnyPublisher()

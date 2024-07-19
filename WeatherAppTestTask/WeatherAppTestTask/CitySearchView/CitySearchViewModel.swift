@@ -53,6 +53,7 @@ final class CitySearchViewModel: ObservableObject {
                 case .finished:
                     print("finished")
                 case .failure(let error):
+                    print("failure")
                     self.errorMessage = error.localizedDescription
                     self.isError.toggle()
                 }
