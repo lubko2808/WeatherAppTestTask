@@ -38,16 +38,7 @@ struct WeatherDataFormatter {
         }
         return dayNadNightTemp
     }
-    
-//    func getDayAndNightTemp(forecastTempModel: ForecastTempModel) -> [String] {
-//        let maxTemp = forecastTempModel.daily.temperature2MMax
-//        let minTemp = forecastTempModel.daily.temperature2MMin
-//        let dayNadNightTemp = zip(maxTemp, minTemp).map { (max, min) in
-//            "\(max)/\(min)\(degreeSing)"
-//        }
-//        return dayNadNightTemp
-//    }
-    
+
     func getWeatherTypesDaily(weatherCodes: [Int]) -> [String] {
         weatherCodes.map { getWeatherType(weatherCode: $0) }
     }
@@ -65,7 +56,7 @@ struct WeatherDataFormatter {
     }
     
     func getHourlyTemp(hourlyTempModel: HourlyWeatherModel) -> [String] {
-        var currentHour = Date().currentHour
+        let currentHour = Date().currentHour
         let hourlyTemps = hourlyTempModel.hourly.temperature2M
         return (0..<24).map { "\(hourlyTemps[currentHour + $0])\(degreeSing)" }
     }
@@ -78,11 +69,13 @@ struct WeatherDataFormatter {
     func get24HoursFromNow() -> [String] {
         
         let currentHour = Date().currentHour
-        
         var hours: [String] = []
         for i in 0..<24 {
             let hour = (currentHour + i) % 24
-            if hour == currentHour { hours.append("Now") }
+            if hour == currentHour {
+                hours.append("Now")
+                continue
+            }
             hours.append(String(format: "%02d", hour))
         }
         
