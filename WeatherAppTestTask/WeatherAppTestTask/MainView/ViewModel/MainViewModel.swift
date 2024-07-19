@@ -26,6 +26,8 @@ class MainViewModel: NSObject, ObservableObject {
     private let weatherDataFormatter = WeatherDataFormatter()
     private let locationManager = CLLocationManager()
     
+    var isAuthorized = false
+    
     var errorMessage: String? = nil
     @Published var isError = false
     
@@ -44,9 +46,19 @@ class MainViewModel: NSObject, ObservableObject {
     override init() {
         super.init()
         locationManager.delegate = self
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.requestLocation()
+        startLocationServices()
     }
+    
+    func startLocationServices() {
+        if locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse {
+            locationManager.startUpdatingLocation()
+            isAuthorized = true
+        } else {
+            isAuthorized = false
+            locationManager.requestWhenInUseAuthorization()
+        }
+    }
+
     
     private func handleError(errorMessage: String) {
         self.errorMessage = errorMessage
@@ -117,12 +129,11 @@ class MainViewModel: NSObject, ObservableObject {
 extension MainViewModel: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        
         guard let currentLocation = locationManager.location else {
             self.handleError(errorMessage: "Can't obtain current location")
             return
         }
-        
+
         CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
             guard let self = self else { return }
             
@@ -152,6 +163,23 @@ extension MainViewModel: CLLocationManagerDelegate {
         isDataReady = false
         self.dailyForecast = []
         self.handleError(errorMessage: "Could not fetch your location")
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedAlways, .authorizedWhenInUse:
+            isAuthorized = true
+            manager.requestLocation()
+        case .notDetermined:
+            isAuthorized = false
+            manager.requestWhenInUseAuthorization()
+        case .denied:
+            isAuthorized = false
+            print("access denied")
+        default:
+            isAuthorized = true
+            startLocationServices()
+        }
     }
     
 }

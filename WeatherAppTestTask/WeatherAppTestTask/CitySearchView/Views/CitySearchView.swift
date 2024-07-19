@@ -97,6 +97,7 @@ struct CitySearchView: View {
             }
         }
         .searchable(text: $viewModel.textFieldText, prompt: "enter the name of the city")
+        .disabled(isGesturesDisabled)
         
     }
 

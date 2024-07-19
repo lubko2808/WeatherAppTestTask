@@ -72,6 +72,7 @@ struct MainView: View {
                         cityLabel
                     }
                 }
+
             }
             .alert("Error", isPresented: $viewModel.isError) {
                 Button("OK", action: {})
@@ -88,7 +89,9 @@ struct MainView: View {
                 CitySearchView(chosenCity: $chosenCity)
             }
         }
-
+//        .onAppear {
+//            viewModel.startUpdatingLocation()
+//        }
     }
     
     private var contentUnavailableView: some View {

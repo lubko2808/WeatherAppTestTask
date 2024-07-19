@@ -10,9 +10,7 @@ import SwiftUI
 struct CityListRowView: View {
     
     let cityData: CityModel.Data
-//    let city: String
-//    let country: String
-    
+
     var body: some View {
         
         Rectangle()
