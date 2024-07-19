@@ -25,6 +25,10 @@ class MainViewModel: NSObject, ObservableObject {
     @Published var days: [String] = []
     @Published var dayAndNightTemp: [String] = []
     
+    @Published var hours: [String] = []
+    @Published var hourlyWeatherTypes: [String] = []
+    @Published var hourlyTemp: [String] = []
+    
     private let locationManager = CLLocationManager()
     
     private var cancellables = Set<AnyCancellable>()
@@ -35,32 +39,37 @@ class MainViewModel: NSObject, ObservableObject {
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         locationManager.requestLocation()
-       
     }
     
     private func handleError(errorMessage: String) {
         self.errorMessage = errorMessage
         self.isError.toggle()
-//        self.currentCity = ""
     }
-    
-    
-    
-    private func handleData(forecastTempModel: ForecastTempModel, currentTempModel: CurrentTempModel) {
-        print(forecastTempModel.daily.weatherCode)
-        let dayAndNightTemp = weatherDataFormatter.getDayAndNightTemp(forecastTempModel: forecastTempModel)
-        let currentTemp = String(currentTempModel.currentWeather.temperature)
-        let days = weatherDataFormatter.getDays()
-        let weatherTypes = weatherDataFormatter.getWeatherTypes(weatherCodes: forecastTempModel.daily.weatherCode)
 
+    
+    private func handleData(dailyWeather: DailyWeatherModel, hourlyWeather: HourlyWeatherModel) {
+        let dayAndNightTemp = weatherDataFormatter.getDayAndNightTemp(daily: dailyWeather.daily)
+        let currentTemp = String(dailyWeather.currentWeather.temperature)
+        let days = weatherDataFormatter.getDays()
+        let weatherTypes = weatherDataFormatter.getWeatherTypesDaily(weatherCodes: dailyWeather.daily.weatherCode)
+        
+        let hours = weatherDataFormatter.get24HoursFromNow()
+        let hourlyWeatherTypes = weatherDataFormatter.getWeatherTypesDaily(weatherCodes: hourlyWeather.hourly.weatherCode)
+        let hourlyTemp = weatherDataFormatter.getHourlyTemp(hourlyTempModel: hourlyWeather)
+        
+        self.hours = hours
+        self.hourlyWeatherTypes = hourlyWeatherTypes
+        self.hourlyTemp = hourlyTemp
         self.dayAndNightTemp = dayAndNightTemp
         self.currentTemp = currentTemp
         self.days = days
         self.weatherTypes = weatherTypes
-        
-        isDataReady = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            self.isDataReady = true
+        }
     }
-    
+
     private func geocoder(city: String, completion: @escaping(Double, Double) -> Void) {
         let geocoder = CLGeocoder()
         
@@ -70,7 +79,7 @@ class MainViewModel: NSObject, ObservableObject {
         geocoder.geocodeAddressString(city, completionHandler: { [weak self] (placemarks, error) in
             guard let self = self else { return }
             
-            if let error = error {
+            if let error {
                 self.handleError(errorMessage: "Could not get information about this city")
                 return
             }
@@ -88,8 +97,8 @@ class MainViewModel: NSObject, ObservableObject {
         geocoder(city: cityName) { [weak self] latitude, longitude in
             guard let self = self else { return }
             
-            self.weatherService.fetchForecastTemp(latitude: latitude, longitude: longitude)
-                .zip(weatherService.fetchCurrentTemp(latitude: latitude, longitude: longitude))
+            self.weatherService.fetchDailyWeather(latitude: latitude, longitude: longitude)
+                .zip(weatherService.fetchHourlyWeather(latitude: latitude, longitude: longitude))
                 .sink { completion in
                     switch completion {
                     case .finished:
@@ -97,10 +106,11 @@ class MainViewModel: NSObject, ObservableObject {
                     case .failure(let error):
                         self.handleError(errorMessage: error.localizedDescription)
                     }
-                } receiveValue: { (forecastTempModel, currentTempModel) in
-                    self.handleData(forecastTempModel: forecastTempModel, currentTempModel: currentTempModel)
+                } receiveValue: { (dailyWeahterModel, hourlyWeatherModel) in
+                    self.handleData(dailyWeather: dailyWeahterModel, hourlyWeather: hourlyWeatherModel)
                 }
-                .store(in: &self.cancellables)
+                .store(in: &cancellables)
+
         }
     }
     
@@ -136,8 +146,8 @@ extension MainViewModel: CLLocationManagerDelegate {
         let currentLatitude = currentLocation.coordinate.latitude
         let currentLongitude = currentLocation.coordinate.longitude
         
-        weatherService.fetchForecastTemp(latitude: currentLatitude, longitude: currentLongitude)
-            .zip(weatherService.fetchCurrentTemp(latitude: currentLatitude, longitude: currentLongitude))
+        weatherService.fetchDailyWeather(latitude: currentLatitude, longitude: currentLongitude)
+            .zip(weatherService.fetchHourlyWeather(latitude: currentLatitude, longitude: currentLongitude))
             .sink { [weak self] completion in
                 switch completion {
                 case .finished:
@@ -145,11 +155,11 @@ extension MainViewModel: CLLocationManagerDelegate {
                 case .failure(let error):
                     self?.handleError(errorMessage: error.localizedDescription)
                 }
-            } receiveValue: { [weak self] (forecastTempModel, currentTempModel) in
-                self?.handleData(forecastTempModel: forecastTempModel, currentTempModel: currentTempModel)
+            } receiveValue: { [weak self] (dailyWeatherModel, hourlyWeatherModel) in
+                self?.handleData(dailyWeather: dailyWeatherModel, hourlyWeather: hourlyWeatherModel)
             }
             .store(in: &cancellables)
-
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {

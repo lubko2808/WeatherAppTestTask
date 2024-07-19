@@ -1,15 +1,22 @@
 //
-//  ForecastTempModel.swift
+//  HourlyTempModel.swift
 //  WeatherAppTestTask
 //
-//  Created by Lubomyr Chorniak on 18.07.2024.
+//  Created by Lubomyr Chorniak on 19.07.2024.
 //
 
 import Foundation
 
-struct ForecastTempModel: Decodable {
+struct DailyWeatherModel: Decodable {
+
+    let currentWeather: CurrentWeather
     let daily: Daily
     
+    enum CodingKeys: String, CodingKey {
+        case daily
+        case currentWeather = "current_weather"
+    }
+
     struct Daily: Decodable {
         
         let temperature2MMax: [Double]
@@ -22,5 +29,9 @@ struct ForecastTempModel: Decodable {
             case weatherCode = "weathercode"
         }
         
+    }
+    
+    struct CurrentWeather: Decodable {
+        let temperature: Double
     }
 }

@@ -38,6 +38,8 @@ final class CitiesService {
         var urlRequest = URLRequest(url: url)
         urlRequest.addValue(header.value, forHTTPHeaderField: header.key)
         
+        print(urlRequest.url?.absoluteString)
+        
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .receive(on: DispatchQueue.main)
             .transformResponseToError()

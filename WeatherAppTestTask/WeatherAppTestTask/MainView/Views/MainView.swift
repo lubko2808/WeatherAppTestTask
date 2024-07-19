@@ -24,17 +24,33 @@ struct MainView: View {
                 
                 ScrollView {
                     
-                    VStack(spacing: 60) {
- 
+                    VStack(spacing: 40) {
+                            
                         HStack(alignment: .firstTextBaseline) {
                             currentTemp
                             dayAndNightTemp
                         }
-                        .animation(.linear(duration: 0.5), value: viewModel.isDataReady)
+                        .animation(.linear(duration: 0.3), value: viewModel.isDataReady)
+                        
+                        ScrollView(.horizontal) {
+                            HStack {
+                                ForEach(0..<viewModel.hourlyTemp.count, id: \.self) { index in
+                                    HourlyWeatherView(
+                                        hour: viewModel.hours[index],
+                                        weatherType: viewModel.hourlyWeatherTypes[index],
+                                        tempterature: viewModel.hourlyTemp[index]
+                                    )
+                                }
+                            }
+                        }
+                        .scrollClipDisabled()
+                        .padding(.horizontal)
+                        .opacity(viewModel.isDataReady ? 1 : 0)
+                        .animation(.easeInOut(duration: 0.3), value: viewModel.isDataReady)
                         
                         VStack(spacing: 15) {
                             ForEach(0..<viewModel.dayAndNightTemp.count, id: \.self) { index in
-                                WeatherForDay(
+                                WeatherForDayView(
                                     weatherType: viewModel.weatherTypes[index],
                                     day: viewModel.days[index],
                                     dayAndNightTemp: viewModel.dayAndNightTemp[index],
@@ -48,8 +64,8 @@ struct MainView: View {
             }
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
-            .hideNavBarOnSwipe(true)
-            .navigationBarAppearance(fontSize: 50)
+            .hideNavBarOnSwipe()
+            .navigationBarAppearance(fontSize: 45)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -117,7 +133,8 @@ struct MainView: View {
 }
 
 
-
 #Preview {
     MainView()
 }
+
+

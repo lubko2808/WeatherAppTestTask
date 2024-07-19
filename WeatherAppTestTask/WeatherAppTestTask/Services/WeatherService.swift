@@ -20,34 +20,14 @@ final class WeatherService {
         components.path = "/v1/forecast"
     }
 
-    
-    func fetchCurrentTemp(latitude: Double, longitude: Double) -> AnyPublisher<CurrentTempModel, Error> {
-        components.queryItems = [
-            URLQueryItem(name: "latitude", value: String(latitude)),
-            URLQueryItem(name: "longitude", value: String(longitude)),
-            URLQueryItem(name: "current_weather", value: "true"),
-        ]
-        
-        guard let url = components.url else {
-            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
-        }
-        
-        var urlRequest = URLRequest(url: url)
-        
-        return URLSession.shared.dataTaskPublisher(for: urlRequest)
-            .receive(on: DispatchQueue.main)
-            .transformResponseToError()
-            .decode(type: CurrentTempModel.self, decoder: jsonDecoder)
-            .eraseToAnyPublisher()
-    }
-    
-    func fetchForecastTemp(latitude: Double, longitude: Double) -> AnyPublisher<ForecastTempModel, Error> {
+    func fetchDailyWeather(latitude: Double, longitude: Double) -> AnyPublisher<DailyWeatherModel, Error> {
         components.queryItems = [
             URLQueryItem(name: "latitude", value: String(latitude)),
             URLQueryItem(name: "longitude", value: String(longitude)),
             URLQueryItem(name: "daily", value: "temperature_2m_max"),
             URLQueryItem(name: "daily", value: "temperature_2m_min"),
             URLQueryItem(name: "daily", value: "weathercode"),
+            URLQueryItem(name: "current_weather", value: "true"),
             URLQueryItem(name: "forecast_days", value: "16")
         ]
         
@@ -55,12 +35,34 @@ final class WeatherService {
             return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
         }
     
-        var urlRequest = URLRequest(url: url)
+        let urlRequest = URLRequest(url: url)
 
         return URLSession.shared.dataTaskPublisher(for: urlRequest)
             .receive(on: DispatchQueue.main)
             .transformResponseToError()
-            .decode(type: ForecastTempModel.self, decoder: jsonDecoder)
+            .decode(type: DailyWeatherModel.self, decoder: jsonDecoder)
+            .eraseToAnyPublisher()
+    }
+    
+    func fetchHourlyWeather(latitude: Double, longitude: Double) -> AnyPublisher<HourlyWeatherModel, Error> {
+        components.queryItems = [
+            URLQueryItem(name: "latitude", value: String(latitude)),
+            URLQueryItem(name: "longitude", value: String(longitude)),
+            URLQueryItem(name: "hourly", value: "temperature_2m"),
+            URLQueryItem(name: "hourly", value: "weathercode"),
+            URLQueryItem(name: "forecast_days", value: "2")
+        ]
+        
+        guard let url = components.url else {
+            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+        }
+    
+        let urlRequest = URLRequest(url: url)
+        
+        return URLSession.shared.dataTaskPublisher(for: urlRequest)
+            .receive(on: DispatchQueue.main)
+            .transformResponseToError()
+            .decode(type: HourlyWeatherModel.self, decoder: jsonDecoder)
             .eraseToAnyPublisher()
     }
     

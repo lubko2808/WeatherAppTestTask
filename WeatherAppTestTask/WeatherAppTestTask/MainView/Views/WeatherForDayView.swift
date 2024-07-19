@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WeatherForDay: View {
+struct WeatherForDayView: View {
 
     var weatherType: String
     var day: String
@@ -19,11 +19,7 @@ struct WeatherForDay: View {
     
     var body: some View {
         HStack {
-            Image(systemName:  weatherType)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(.blue)
+            WeatherTypeIconView(weatherType: weatherType)
             
             Text(day)
                 .font(.system(.title))
@@ -46,9 +42,8 @@ struct WeatherForDay: View {
         .onAppear {
             offset = 0
         }
-        .onDisappear {
-            offset = -500
-        }
+
     }
     
 }
+

@@ -10,29 +10,25 @@ import SwiftUI
 extension View {
     
     @ViewBuilder
-    func hideNavBarOnSwipe(_ isHidden: Bool) -> some View {
+    func hideNavBarOnSwipe() -> some View {
         self
-            .modifier(NavBarModifier(isHidden: isHidden))
+            .modifier(NavBarModifier())
     }
     
 }
 
 private struct NavBarModifier: ViewModifier {
-    
-    var isHidden: Bool
-    
+
     func body(content: Content) -> some View {
         content
-            .background(NavigationControllerExtractor(isHidden: isHidden))
+            .background(NavigationControllerExtractor())
     }
     
 }
 
 
 private struct NavigationControllerExtractor: UIViewRepresentable {
-    
-    var isHidden: Bool
-    
+
     func makeUIView(context: Context) -> some UIView {
         return UIView()
     }
@@ -40,7 +36,7 @@ private struct NavigationControllerExtractor: UIViewRepresentable {
     func updateUIView(_ uiView: UIViewType, context: Context) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             if let hostView = uiView.superview?.superview, let parentController = hostView.parentController {
-                parentController.navigationController?.hidesBarsOnSwipe = isHidden
+                parentController.navigationController?.hidesBarsOnSwipe = true
             }
         }
     }
