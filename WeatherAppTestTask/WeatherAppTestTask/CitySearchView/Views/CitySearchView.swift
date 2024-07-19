@@ -18,15 +18,12 @@ struct CitySearchView: View {
     @State private var selectedRow: Int? = nil
     @State private var isGesturesDisabled = false
 
-    
     var body: some View {
         NavigationStack {
             ZStack {
-                
                 backgroundView
                 
                 VStack {
-//                    cityTextField
                     
                     ScrollView {
                         LazyVStack {
@@ -95,8 +92,6 @@ struct CitySearchView: View {
                             .foregroundColor(.white)
                             .font(.system(size: 22))
                     }
-
-                    
                 }
             }
             .alert("Error", isPresented: $viewModel.isError) {
@@ -109,35 +104,12 @@ struct CitySearchView: View {
         
     }
 
-    
-    private var cityTextField: some View {
-        TextField(
-            "",
-            text: $viewModel.textFieldText,
-            prompt: Text("enter the name of the city").foregroundStyle(.blue)
-        )
-            .foregroundColor(.white)
-            .font(.title)
-            .frame(height: 46)
-            .padding(.horizontal)
-            .padding(.vertical, 5)
-            .overlay {
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(.white, lineWidth: 3)
-            }
-            .cornerRadius(20)
-            .padding()
-    }
-    
-    
-    
     private var backgroundView: some View {
         LinearGradient(
             gradient: Gradient(colors: [.blue.opacity(0.6), Color.whiteBlue, .blue.opacity(0.6)]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing)
         .ignoresSafeArea()
-
     }
     
 }

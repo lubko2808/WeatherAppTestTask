@@ -11,7 +11,7 @@ struct MainView: View {
     
     @StateObject private var viewModel = MainViewModel()
     
-    @State private var chosenCity: String? = nil
+    @State private var chosenCity: String? = nil 
     @State private var showCitySearchView = false
     
     var body: some View {
@@ -35,12 +35,8 @@ struct MainView: View {
                         
                         ScrollView(.horizontal) {
                             HStack {
-                                ForEach(0..<viewModel.hourlyTemp.count, id: \.self) { index in
-                                    HourlyWeatherView(
-                                        hour: viewModel.hours[index],
-                                        weatherType: viewModel.hourlyWeatherTypes[index],
-                                        tempterature: viewModel.hourlyTemp[index]
-                                    )
+                                ForEach(0..<viewModel.hourlyForecast.count, id: \.self) { index in
+                                    HourlyWeatherView(hourlyForecast: viewModel.hourlyForecast[index])
                                 }
                             }
                         }
@@ -50,13 +46,8 @@ struct MainView: View {
                         .animation(.easeInOut(duration: 0.3), value: viewModel.isDataReady)
                         
                         VStack(spacing: 15) {
-                            ForEach(0..<viewModel.dayAndNightTemp.count, id: \.self) { index in
-                                WeatherForDayView(
-                                    weatherType: viewModel.weatherTypes[index],
-                                    day: viewModel.days[index],
-                                    dayAndNightTemp: viewModel.dayAndNightTemp[index],
-                                    sequenceNumber: index
-                                )
+                            ForEach(0..<viewModel.dailyForecast.count, id: \.self) { index in
+                                WeatherForDayView(dailyForecast: viewModel.dailyForecast[index], sequenceNumber: index)
                             }
                         }
                     }
@@ -78,11 +69,10 @@ struct MainView: View {
                         chosenCity = nil
                         showCitySearchView = true
                     } label: {
-                        cityButton
+                        cityLabel
                     }
                 }
             }
-
             .alert("Error", isPresented: $viewModel.isError) {
                 Button("OK", action: {})
             } message: {
@@ -98,9 +88,8 @@ struct MainView: View {
                 CitySearchView(chosenCity: $chosenCity)
             }
         }
-        
+
     }
-    
     
     private var contentUnavailableView: some View {
         VStack {
@@ -115,8 +104,8 @@ struct MainView: View {
         }
     }
     
-    private var cityButton: some View {
-        Text("city")
+    private var cityLabel: some View {
+        Text("Chose city")
             .foregroundColor(.black)
             .padding(.horizontal)
             .padding(.vertical, 6)
@@ -130,16 +119,14 @@ struct MainView: View {
             .fontDesign(.rounded)
             .foregroundColor(.white)
             .opacity(viewModel.isDataReady ? 1 : 0)
-            .scaleEffect(viewModel.isDataReady ? 1 : 2)
     }
     
     private var dayAndNightTemp: some View {
-        Text(viewModel.dayAndNightTemp.isEmpty ? "" : viewModel.dayAndNightTemp[0])
+        Text(viewModel.todaysDayAndNightTemp ?? "")
             .font(.system(size: 25, weight: .medium))
             .fontDesign(.rounded)
             .foregroundColor(.white)
             .opacity(viewModel.isDataReady ? 1 : 0)
-            .scaleEffect(viewModel.isDataReady ? 1 : 2)
     }
     
     private var backgroundView: some View {
@@ -148,10 +135,7 @@ struct MainView: View {
             startPoint: .topLeading,
             endPoint: .bottomTrailing)
     }
-    
-    
 
-    
 }
 
 

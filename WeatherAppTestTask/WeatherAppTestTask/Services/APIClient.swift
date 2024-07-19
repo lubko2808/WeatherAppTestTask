@@ -42,7 +42,6 @@ class APIClient {
                     URLQueryItem(name: "current_weather", value: "true"),
                     URLQueryItem(name: "forecast_days", value: "16")
                 ]
-                
             case .hourlyWeather(let latitude, let longitude):
                 components.scheme = "https"
                 components.host = "api.open-meteo.com"

@@ -9,9 +9,7 @@ import SwiftUI
 
 struct WeatherForDayView: View {
 
-    var weatherType: String
-    var day: String
-    var dayAndNightTemp: String
+    var dailyForecast: DayForecast
     
     var sequenceNumber: Int
     @State private var startAnimation = false
@@ -19,16 +17,16 @@ struct WeatherForDayView: View {
     
     var body: some View {
         HStack {
-            WeatherTypeIconView(weatherType: weatherType)
+            WeatherTypeIconView(weatherType: dailyForecast.weatherType)
             
-            Text(day)
+            Text(dailyForecast.day)
                 .font(.system(.title))
                 .foregroundColor(.white)
                 .padding(.leading, 7)
             
             Spacer()
             
-            Text(dayAndNightTemp)
+            Text(dailyForecast.dayAndNightTemp)
                 .font(.system(.body))
                 .foregroundColor(.gray)
         }
@@ -42,7 +40,6 @@ struct WeatherForDayView: View {
         .onAppear {
             offset = 0
         }
-
     }
     
 }

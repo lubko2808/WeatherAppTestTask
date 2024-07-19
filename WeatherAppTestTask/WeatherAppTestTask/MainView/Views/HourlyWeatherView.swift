@@ -8,21 +8,19 @@
 import SwiftUI
 
 struct HourlyWeatherView: View {
-    
-    var hour: String
-    var weatherType: String
-    var tempterature: String
+
+    let hourlyForecast: HourForecaset
     
     var body: some View {
         VStack(alignment: .center) {
             
-            Text(hour)
+            Text(hourlyForecast.hour)
                 .foregroundStyle(.white)
                 .font(.title3)
             
-            WeatherTypeIconView(weatherType: weatherType)
+            WeatherTypeIconView(weatherType: hourlyForecast.weatherType)
             
-            Text(tempterature)
+            Text(hourlyForecast.temp)
                 .foregroundStyle(.white)
                 .font(.title3)
             

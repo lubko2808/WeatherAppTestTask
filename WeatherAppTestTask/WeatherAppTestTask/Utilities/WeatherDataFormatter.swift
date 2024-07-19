@@ -28,9 +28,10 @@ struct WeatherDataFormatter {
         case unknown = "xmark"
     }
     
+    private let dayDict = [0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"]
     private let degreeSing = "\u{00B0}"
     
-    func getDayAndNightTemp(daily: DailyWeatherModel.Daily) -> [String] {
+    private func getDayAndNightTemp(daily: DailyWeatherModel.Daily) -> [String] {
         let maxTemp = daily.temperature2MMax
         let minTemp = daily.temperature2MMin
         let dayNadNightTemp = zip(maxTemp, minTemp).map { (max, min) in
@@ -39,7 +40,7 @@ struct WeatherDataFormatter {
         return dayNadNightTemp
     }
 
-    func getWeatherTypesDaily(weatherCodes: [Int]) -> [String] {
+    private func getWeatherTypesDaily(weatherCodes: [Int]) -> [String] {
         weatherCodes.map { getWeatherType(weatherCode: $0) }
     }
     
@@ -55,18 +56,18 @@ struct WeatherDataFormatter {
         }
     }
     
-    func getHourlyTemp(hourlyTempModel: HourlyWeatherModel) -> [String] {
+    private func getHourlyTemp(hourlyTempModel: HourlyWeatherModel) -> [String] {
         let currentHour = Date().currentHour
         let hourlyTemps = hourlyTempModel.hourly.temperature2M
         return (0..<24).map { "\(hourlyTemps[currentHour + $0])\(degreeSing)" }
     }
     
-    func getWeatherCodesHourly(weatherCodes: [Int]) -> [String] {
+    private func getWeatherCodesHourly(weatherCodes: [Int]) -> [String] {
         let currentHour = Date().currentHour
         return (0..<24).map { getWeatherType(weatherCode: weatherCodes[currentHour + $0]) }
     }
     
-    func get24HoursFromNow() -> [String] {
+    private func get24HoursFromNow() -> [String] {
         
         let currentHour = Date().currentHour
         var hours: [String] = []
@@ -82,10 +83,7 @@ struct WeatherDataFormatter {
         return hours
     }
     
-    
-    
-    func getDays() -> [String] {
-        let dayDict = [0: "Sun", 1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat"]
+    private func getDays() -> [String] {
         let currentDate = Date()
         let calendar = Calendar.current
         let currentDay = calendar.component(.weekday, from: currentDate) - 1
@@ -93,8 +91,30 @@ struct WeatherDataFormatter {
         return (0..<16).compactMap { dayDict[ (currentDay + $0) % 7 ] }
     }
     
+    func getHourlyForecast(hourlyWeather: HourlyWeatherModel) -> [HourForecaset] {
+        let hours = get24HoursFromNow()
+        let hourlyWeatherTypes = getWeatherTypesDaily(weatherCodes: hourlyWeather.hourly.weatherCode)
+        let hourlyTemp = getHourlyTemp(hourlyTempModel: hourlyWeather)
+        
+        var hourlyForecast = [HourForecaset]()
+        for index in 0..<hours.count {
+            hourlyForecast.append(.init(hour: hours[index], weatherType: hourlyWeatherTypes[index], temp: hourlyTemp[index]))
+        }
+        
+        return hourlyForecast
+    }
     
-    
+    func getDailyForecast(dailyWeather: DailyWeatherModel) -> [DayForecast] {
+        let dayAndNightTemp = getDayAndNightTemp(daily: dailyWeather.daily)
+        let days = getDays()
+        let weatherTypes = getWeatherTypesDaily(weatherCodes: dailyWeather.daily.weatherCode)
+        
+        var dailyForecast = [DayForecast]()
+        for index in 0..<dayAndNightTemp.count {
+            dailyForecast.append(.init(weatherType: weatherTypes[index], day: days[index], dayAndNightTemp: dayAndNightTemp[index]))
+        }
+        return dailyForecast
+    }
     
 }
 
