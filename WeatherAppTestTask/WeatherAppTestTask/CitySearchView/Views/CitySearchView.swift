@@ -9,14 +9,11 @@ import SwiftUI
 
 struct CitySearchView: View {
     
-    @Binding var chosenCity: String?
+    @Binding var chosenCity: String
 
     @StateObject private var viewModel = CitySearchViewModel()
     
     @Environment(\.dismiss) var dismissView
-    
-    @State private var selectedRow: Int? = nil
-    @State private var isGesturesDisabled = false
 
     var body: some View {
         NavigationStack {
@@ -29,21 +26,9 @@ struct CitySearchView: View {
                         LazyVStack {
                             ForEach(0..<viewModel.cityData.count, id: \.self) { index in
                                 CityListRowView(cityData: viewModel.cityData[index])
-                                .scaleEffect(selectedRow == index ? 1.3 : 1)
                                 .onTapGesture {
-                                    isGesturesDisabled = true
-                                    withAnimation(.easeIn(duration: 0.2)) {
-                                        selectedRow = index
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                        withAnimation(.easeIn(duration: 0.2)) {
-                                            selectedRow = nil
-                                        }
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                        chosenCity = viewModel.cityData[index].city
-                                        dismissView()
-                                    }
+                                    chosenCity = viewModel.cityData[index].city
+                                    dismissView()
                                 }
                                 .padding(.vertical, 7)
         
@@ -74,14 +59,12 @@ struct CitySearchView: View {
                     }
                 }
             }
-            .disabled(isGesturesDisabled)
             .navigationTitle("Add city")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarAppearance(inlineFontSize: 25)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        chosenCity = nil
                         dismissView()
                     } label: {
                         Text("cancel")
@@ -97,7 +80,6 @@ struct CitySearchView: View {
             }
         }
         .searchable(text: $viewModel.textFieldText, prompt: "enter the name of the city")
-        .disabled(isGesturesDisabled)
         
     }
 

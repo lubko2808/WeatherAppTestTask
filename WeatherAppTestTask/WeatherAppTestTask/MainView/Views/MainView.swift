@@ -10,8 +10,7 @@ import SwiftUI
 struct MainView: View {
     
     @StateObject private var viewModel = MainViewModel()
-    
-    @State private var chosenCity: String? = nil 
+
     @State private var showCitySearchView = false
     
     var body: some View {
@@ -66,7 +65,7 @@ struct MainView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        chosenCity = nil
+//                        chosenCity = nil
                         showCitySearchView = true
                     } label: {
                         cityLabel
@@ -79,19 +78,10 @@ struct MainView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
-            
             .sheet(isPresented: $showCitySearchView) {
-                if let chosenCity {
-                    viewModel.currentCity = chosenCity
-                    viewModel.fetchWeatherForCity(cityName: chosenCity)
-                }
-            } content: {
-                CitySearchView(chosenCity: $chosenCity)
+                CitySearchView(chosenCity: $viewModel.currentCity)
             }
         }
-//        .onAppear {
-//            viewModel.startUpdatingLocation()
-//        }
     }
     
     private var contentUnavailableView: some View {

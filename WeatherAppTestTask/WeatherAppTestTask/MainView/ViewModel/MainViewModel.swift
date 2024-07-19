@@ -27,7 +27,6 @@ class MainViewModel: NSObject, ObservableObject {
     private let locationManager = CLLocationManager()
     
     var isAuthorized = false
-    
     var errorMessage: String? = nil
     @Published var isError = false
     
@@ -47,6 +46,16 @@ class MainViewModel: NSObject, ObservableObject {
         super.init()
         locationManager.delegate = self
         startLocationServices()
+        
+        $currentCity
+            .dropFirst(2)
+            .sink { city in
+                print("here")
+                print(city)
+                self.fetchWeatherForCity(cityName: city)
+            }
+            .store(in: &cancellables)
+        
     }
     
     func startLocationServices() {
@@ -133,7 +142,8 @@ extension MainViewModel: CLLocationManagerDelegate {
             self.handleError(errorMessage: "Can't obtain current location")
             return
         }
-
+//        locationManager.stopUpdatingLocation()
+        
         CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
             guard let self = self else { return }
             
@@ -175,7 +185,6 @@ extension MainViewModel: CLLocationManagerDelegate {
             manager.requestWhenInUseAuthorization()
         case .denied:
             isAuthorized = false
-            print("access denied")
         default:
             isAuthorized = true
             startLocationServices()
