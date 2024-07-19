@@ -48,7 +48,8 @@ struct MainView: View {
             }
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
-            .navigationAppearance(fontSize: 50)
+            .hideNavBarOnSwipe(true)
+            .navigationBarAppearance(fontSize: 50)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {

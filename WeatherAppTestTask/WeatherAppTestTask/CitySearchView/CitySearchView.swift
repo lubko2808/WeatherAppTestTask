@@ -68,7 +68,7 @@ struct CitySearchView: View {
             }
             .navigationTitle("Add city")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationAppearance(fontSize: 25)
+            .navigationBarAppearance(fontSize: 25)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
