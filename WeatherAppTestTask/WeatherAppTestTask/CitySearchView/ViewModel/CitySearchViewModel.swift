@@ -28,15 +28,18 @@ final class CitySearchViewModel: ObservableObject {
     
     private func addTextFieldSubscriber() {
         $textFieldText
+            .map { text in
+                if text.isEmpty {
+                    self.cities = []
+                }
+                return text
+            }
             .debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
             .sink { [weak self] text in
                 if !text.isEmpty {
                     self?.cities = []
                     self?.isLoadingData = true
                     self?.fetchCities(beginnigView: text)
-                } else {
-                    self?.cities = []
-                    self?.countries = []
                 }
             }
             .store(in: &cancellables)
@@ -71,7 +74,9 @@ final class CitySearchViewModel: ObservableObject {
             tempCities.append(cityData.city)
             tempCountries.append(cityData.country)
         }
-
+        
+        if cities.isEmpty && tempCities.isEmpty { return }
+        
         cities = tempCities
         countries = tempCountries
         

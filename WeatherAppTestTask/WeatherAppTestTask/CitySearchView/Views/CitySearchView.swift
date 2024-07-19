@@ -14,7 +14,7 @@ struct CitySearchView: View {
     @StateObject private var viewModel = CitySearchViewModel()
     
     @Environment(\.dismiss) var dismissView
-
+    
     @State private var selectedRow: Int? = nil
     @State private var isGesturesDisabled = false
 
@@ -26,7 +26,7 @@ struct CitySearchView: View {
                 backgroundView
                 
                 VStack {
-                    cityTextField
+//                    cityTextField
                     
                     ScrollView {
                         LazyVStack {
@@ -58,6 +58,9 @@ struct CitySearchView: View {
                         }
                         .padding(.horizontal)
                     }
+                    .clipped()
+                    .ignoresSafeArea(.container, edges: .bottom)
+                
                     .scrollIndicators(.never)
                     .overlay {
                         if viewModel.cities.count == 0 && viewModel.isLoadingData == false {
@@ -66,12 +69,22 @@ struct CitySearchView: View {
                                 .scaledToFit()
                         }
                     }
+                    .overlay {
+                        if viewModel.isLoadingData {
+                            ZStack {
+                                Color.black.opacity(0.1)
+                                    .ignoresSafeArea()
+                                
+                                ProgressView()
+                            }
+                        }
+                    }
                 }
             }
             .disabled(isGesturesDisabled)
             .navigationTitle("Add city")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarAppearance(inlineFontSize: 25, isTransperentBackground: true ,backgroundColor: UIColor.clear)
+            .navigationBarAppearance(inlineFontSize: 25)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -92,6 +105,7 @@ struct CitySearchView: View {
                 Text(viewModel.errorMessage ?? "")
             }
         }
+        .searchable(text: $viewModel.textFieldText, prompt: "enter the name of the city")
         
     }
 
@@ -115,9 +129,11 @@ struct CitySearchView: View {
             .padding()
     }
     
+    
+    
     private var backgroundView: some View {
         LinearGradient(
-            gradient: Gradient(colors: [.blue.opacity(0.6), Color.whiteBlue]),
+            gradient: Gradient(colors: [.blue.opacity(0.6), Color.whiteBlue, .blue.opacity(0.6)]),
             startPoint: .topLeading,
             endPoint: .bottomTrailing)
         .ignoresSafeArea()
