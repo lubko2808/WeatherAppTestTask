@@ -64,7 +64,6 @@ class MainViewModel: NSObject, ObservableObject {
 
         self.isContentAvailable = true
         self.isDataReady = true
-
     }
 
     private func geocoder(city: String, completion: @escaping(Double, Double) -> Void) {

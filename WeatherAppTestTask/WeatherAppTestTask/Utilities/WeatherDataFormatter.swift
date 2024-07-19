@@ -87,8 +87,8 @@ struct WeatherDataFormatter {
         let currentDate = Date()
         let calendar = Calendar.current
         let currentDay = calendar.component(.weekday, from: currentDate) - 1
-        
-        return (0..<16).compactMap { dayDict[ (currentDay + $0) % 7 ] }
+        let maxDaysForForecast = 16
+        return (0..<maxDaysForForecast).compactMap { dayDict[ (currentDay + $0) % 7 ] }
     }
     
     func getHourlyForecast(hourlyWeather: HourlyWeatherModel) -> [HourForecaset] {
