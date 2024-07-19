@@ -38,7 +38,7 @@ struct CitySearchView: View {
                                 
                                 .scaleEffect(selectedRow == index ? 1.3 : 1)
                                 .onTapGesture {
-                                    isGesturesDisabled = true 
+                                    isGesturesDisabled = true
                                     withAnimation(.easeIn(duration: 0.2)) {
                                         selectedRow = index
                                     }
@@ -71,7 +71,7 @@ struct CitySearchView: View {
             .disabled(isGesturesDisabled)
             .navigationTitle("Add city")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarAppearance(fontSize: 25)
+            .navigationBarAppearance(inlineFontSize: 25, isTransperentBackground: true ,backgroundColor: UIColor.clear)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
@@ -121,11 +121,7 @@ struct CitySearchView: View {
             startPoint: .topLeading,
             endPoint: .bottomTrailing)
         .ignoresSafeArea()
-        
-//        Color.teal
-//            .opacity(0.8)
-//            .ignoresSafeArea()
-//            .blur(radius: 10)
+
     }
     
 }

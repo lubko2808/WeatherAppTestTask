@@ -37,6 +37,7 @@ private struct NavigationControllerExtractor: UIViewRepresentable {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             if let hostView = uiView.superview?.superview, let parentController = hostView.parentController {
                 parentController.navigationController?.hidesBarsOnSwipe = true
+
             }
         }
     }

@@ -11,27 +11,33 @@ import SwiftUI
 extension View {
     
     @ViewBuilder
-    func navigationBarAppearance(fontSize: CGFloat) -> some View {
+    func navigationBarAppearance(largeFontSize: CGFloat = 45, inlineFontSize: CGFloat = 20, isTransperentBackground: Bool = false, backgroundColor: UIColor = .quaternaryLabel) -> some View {
         self
-            .modifier(navigationBarAppearanceModifier(fontSize: fontSize))
+            .modifier(navigationBarAppearanceModifier(largeFontSize: largeFontSize, inlineFontSize: inlineFontSize, isTransperentBackground: isTransperentBackground, backgroundColor: backgroundColor))
     }
     
 }
 
 private struct navigationBarAppearanceModifier: ViewModifier {
     
-    let fontSize: CGFloat
+    let largeFontSize: CGFloat
+    let inlineFontSize: CGFloat
+    let isTransperentBackground: Bool
+    let backgroundColor: UIColor
     
     func body(content: Content) -> some View {
         content
-            .background(NavigationController(fontSize: fontSize))
+            .background(NavigationController(largeFontSize: largeFontSize, inlineFontSize: inlineFontSize, isTransperentBackground: isTransperentBackground, backgroundColor: backgroundColor))
     }
     
 }
 
 private struct NavigationController: UIViewRepresentable {
     
-    let fontSize: CGFloat
+    let largeFontSize: CGFloat
+    let inlineFontSize: CGFloat
+    let isTransperentBackground: Bool
+    let backgroundColor: UIColor
     
     func makeUIView(context: Context) -> some UIView {
         return UIView()
@@ -44,14 +50,16 @@ private struct NavigationController: UIViewRepresentable {
                 let appearance = UINavigationBarAppearance()
                 let textColor = UIColor.white
                 
-                appearance.configureWithTransparentBackground()
+                isTransperentBackground ? appearance.configureWithTransparentBackground() : appearance.configureWithOpaqueBackground()
+
+                appearance.backgroundColor = backgroundColor
                 appearance.largeTitleTextAttributes = [
-                    .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+                    .font: UIFont.systemFont(ofSize: largeFontSize, weight: .semibold),
                     .foregroundColor: textColor,
                 ]
-                
+
                 appearance.titleTextAttributes = [
-                    .font: UIFont.systemFont(ofSize: fontSize, weight: .semibold),
+                    .font: UIFont.systemFont(ofSize: inlineFontSize, weight: .semibold),
                     .foregroundColor: textColor,
                 ]
                 

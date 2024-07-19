@@ -30,6 +30,7 @@ struct MainView: View {
                             currentTemp
                             dayAndNightTemp
                         }
+                        .padding(.top, 30)
                         .animation(.linear(duration: 0.3), value: viewModel.isDataReady)
                         
                         ScrollView(.horizontal) {
@@ -70,8 +71,7 @@ struct MainView: View {
             }
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
-            .hideNavBarOnSwipe()
-            .navigationBarAppearance(fontSize: 45)
+            .navigationBarAppearance()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
