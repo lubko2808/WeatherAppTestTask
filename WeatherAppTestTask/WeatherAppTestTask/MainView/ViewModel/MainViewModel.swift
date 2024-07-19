@@ -20,7 +20,6 @@ struct DayForecast {
     let dayAndNightTemp: String
 }
 
-
 class MainViewModel: NSObject, ObservableObject {
     
     private let apiClinet = APIClient()

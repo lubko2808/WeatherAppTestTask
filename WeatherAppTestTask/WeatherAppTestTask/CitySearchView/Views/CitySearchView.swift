@@ -27,12 +27,8 @@ struct CitySearchView: View {
                     
                     ScrollView {
                         LazyVStack {
-                            ForEach(0..<viewModel.cities.count, id: \.self) { index in
-                                CityListRowView(
-                                    city: viewModel.cities[index],
-                                    country: viewModel.countries[index]
-                                )
-                                
+                            ForEach(0..<viewModel.cityData.count, id: \.self) { index in
+                                CityListRowView(cityData: viewModel.cityData[index])
                                 .scaleEffect(selectedRow == index ? 1.3 : 1)
                                 .onTapGesture {
                                     isGesturesDisabled = true
@@ -45,7 +41,7 @@ struct CitySearchView: View {
                                         }
                                     }
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                                        chosenCity = viewModel.cities[index]
+                                        chosenCity = viewModel.cityData[index].city
                                         dismissView()
                                     }
                                 }
@@ -60,7 +56,7 @@ struct CitySearchView: View {
                 
                     .scrollIndicators(.never)
                     .overlay {
-                        if viewModel.cities.count == 0 && viewModel.isLoadingData == false {
+                        if viewModel.cityData.count == 0 && viewModel.isLoadingData == false {
                             Image(uiImage: UIImage(resource: .unavailable))
                                 .resizable()
                                 .scaledToFit()

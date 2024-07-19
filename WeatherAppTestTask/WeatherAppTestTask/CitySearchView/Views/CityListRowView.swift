@@ -9,8 +9,9 @@ import SwiftUI
 
 struct CityListRowView: View {
     
-    let city: String
-    let country: String
+    let cityData: CityModel.Data
+//    let city: String
+//    let country: String
     
     var body: some View {
         
@@ -21,12 +22,12 @@ struct CityListRowView: View {
                 
                 VStack(alignment: .leading) {
                     
-                    Text(city)
+                    Text(cityData.city)
                         .font(.title)
                         .fontWeight(.semibold)
                         .foregroundColor(.white)
                     
-                    Text(country)
+                    Text(cityData.country)
                         .font(.title2)
                         .foregroundColor(Color(uiColor: .lightText))
                 }

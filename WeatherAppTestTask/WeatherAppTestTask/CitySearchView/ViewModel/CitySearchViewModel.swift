@@ -17,8 +17,8 @@ final class CitySearchViewModel: ObservableObject {
     
     @Published var textFieldText = ""
     @Published var isLoadingData = false
-    @Published var cities: [String] = []
-    @Published var countries: [String] = []
+    
+    @Published var cityData: [CityModel.Data] = []
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -29,22 +29,23 @@ final class CitySearchViewModel: ObservableObject {
     private func addTextFieldSubscriber() {
         $textFieldText
             .map { text in
+                self.cityData = []
                 if text.isEmpty {
-                    self.cities = []
+                    self.isLoadingData = false
+                } else {
+                    self.isLoadingData = true
                 }
                 return text
             }
             .debounce(for: .seconds(0.8), scheduler: DispatchQueue.main)
             .sink { [weak self] text in
                 if !text.isEmpty {
-                    self?.cities = []
-                    self?.isLoadingData = true
+                    self?.cityData = []
                     self?.fetchCities(beginnigView: text)
                 }
             }
             .store(in: &cancellables)
     }
-    
     
     func fetchCities(beginnigView prefix: String) {
         apiClient.fetch(.city(prefix: prefix))
@@ -57,26 +58,10 @@ final class CitySearchViewModel: ObservableObject {
                     self.errorMessage = error.localizedDescription
                     self.isError.toggle()
                 }
-            } receiveValue: { cityModel in
-                self.handleData(cityModel: cityModel)
+            } receiveValue: { (cityModel: CityModel) in
+                self.cityData = cityModel.data
             }
             .store(in: &cancellables)
     }
-    
-    private func handleData(cityModel: CityModel) {
-        var tempCities: [String] = []
-        var tempCountries: [String] = []
-        for cityData in cityModel.data {
-            tempCities.append(cityData.city)
-            tempCountries.append(cityData.country)
-        }
-        
-        if cities.isEmpty && tempCities.isEmpty { return }
-        
-        cities = tempCities
-        countries = tempCountries
-        
-    }
-    
     
 }
