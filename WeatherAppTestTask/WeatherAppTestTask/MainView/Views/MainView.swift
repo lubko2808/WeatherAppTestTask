@@ -62,6 +62,12 @@ struct MainView: View {
                 }
                 .scrollIndicators(.never)
             }
+            .overlay {
+                if !viewModel.isContentAvailable {
+                    contentUnavailableView
+                }
+
+            }
             .navigationBarTitleDisplayMode(.large)
             .navigationTitle(viewModel.currentCity)
             .hideNavBarOnSwipe()
@@ -95,7 +101,21 @@ struct MainView: View {
         
     }
     
-    var cityButton: some View {
+    
+    private var contentUnavailableView: some View {
+        VStack {
+            Text("Chose City")
+                .font(.largeTitle.bold())
+                .foregroundStyle(.gray)
+            
+            Image(.smileIcon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 200)
+        }
+    }
+    
+    private var cityButton: some View {
         Text("city")
             .foregroundColor(.black)
             .padding(.horizontal)
@@ -104,7 +124,7 @@ struct MainView: View {
             .cornerRadius(25)
     }
     
-    var currentTemp: some View {
+    private var currentTemp: some View {
         Text(viewModel.currentTemp)
             .font(.system(size: 100, weight: .medium))
             .fontDesign(.rounded)
@@ -113,7 +133,7 @@ struct MainView: View {
             .scaleEffect(viewModel.isDataReady ? 1 : 2)
     }
     
-    var dayAndNightTemp: some View {
+    private var dayAndNightTemp: some View {
         Text(viewModel.dayAndNightTemp.isEmpty ? "" : viewModel.dayAndNightTemp[0])
             .font(.system(size: 25, weight: .medium))
             .fontDesign(.rounded)
@@ -128,6 +148,8 @@ struct MainView: View {
             startPoint: .topLeading,
             endPoint: .bottomTrailing)
     }
+    
+    
 
     
 }

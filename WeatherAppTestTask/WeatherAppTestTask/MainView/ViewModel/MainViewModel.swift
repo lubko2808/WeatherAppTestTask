@@ -29,6 +29,8 @@ class MainViewModel: NSObject, ObservableObject {
     @Published var hourlyWeatherTypes: [String] = []
     @Published var hourlyTemp: [String] = []
     
+    @Published var isContentAvailable = true
+    
     private let locationManager = CLLocationManager()
     
     private var cancellables = Set<AnyCancellable>()
@@ -44,8 +46,20 @@ class MainViewModel: NSObject, ObservableObject {
     private func handleError(errorMessage: String) {
         self.errorMessage = errorMessage
         self.isError.toggle()
+        isContentAvailable = false
+        isDataReady = false
+        cleanData()
     }
 
+    private func cleanData() {
+        self.hours = []
+        self.hourlyWeatherTypes = []
+        self.hourlyTemp = []
+        self.dayAndNightTemp = []
+        self.currentTemp = ""
+        self.days = []
+        self.weatherTypes = []
+    }
     
     private func handleData(dailyWeather: DailyWeatherModel, hourlyWeather: HourlyWeatherModel) {
         let dayAndNightTemp = weatherDataFormatter.getDayAndNightTemp(daily: dailyWeather.daily)
@@ -65,6 +79,7 @@ class MainViewModel: NSObject, ObservableObject {
         self.days = days
         self.weatherTypes = weatherTypes
 
+        self.isContentAvailable = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             self.isDataReady = true
         }
@@ -164,6 +179,9 @@ extension MainViewModel: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         print("didFailWithError")
+        isContentAvailable = false
+        isDataReady = false
+        cleanData()
         self.handleError(errorMessage: "Location update failed: \(error.localizedDescription)")
     }
     
