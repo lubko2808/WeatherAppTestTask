@@ -22,7 +22,8 @@ struct DayForecast {
 
 class MainViewModel: NSObject, ObservableObject {
     
-    private let apiClinet = APIClient()
+    
+    private let apiClinet = URLSessionAPIClient<WeatherEndpoint>()
     private let weatherDataFormatter = WeatherDataFormatter()
 
     var errorMessage: String? = nil
@@ -148,8 +149,8 @@ class MainViewModel: NSObject, ObservableObject {
     }
     
     private func fetchWeather(latitude: Double, longitude: Double) {
-        apiClinet.fetch(.dailyWeather(latitude: latitude, longitude: longitude))
-            .zip(apiClinet.fetch(.hourlyWeather(latitude: latitude, longitude: longitude)))
+        apiClinet.request(.getDailyWeather(latitude: latitude, longitude: longitude))
+            .zip(apiClinet.request(.getHourlyWeather(latitude: latitude, longitude: longitude)))
             .sink { [weak self] completion in
                 switch completion {
                 case .finished: break
@@ -160,7 +161,10 @@ class MainViewModel: NSObject, ObservableObject {
                 self?.handleData(dailyWeather: dailyWeatherModel, hourlyWeather: hourlyWeatherModel)
             }
             .store(in: &cancellables)
+        
     }
+    
+    
     
 }
 

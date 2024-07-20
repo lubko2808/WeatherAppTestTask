@@ -12,8 +12,8 @@ final class CitySearchViewModel: ObservableObject {
     
     private(set) var errorMessage: String? = nil
     @Published var isError = false
-    
-    private let apiClient = APIClient()
+
+    private let apiClient = URLSessionAPIClient<CityEndpoint>()
     
     @Published var textFieldText = ""
     @Published var isLoadingData = false
@@ -48,7 +48,8 @@ final class CitySearchViewModel: ObservableObject {
     }
     
     func fetchCities(beginnigView prefix: String) {
-        apiClient.fetch(.city(prefix: prefix))
+        
+        apiClient.request(.getCity(prefix: prefix))
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 self.isLoadingData = false
@@ -56,12 +57,13 @@ final class CitySearchViewModel: ObservableObject {
                 case .finished: break
                 case .failure(let error):
                     self.errorMessage = error.localizedDescription
-                    self.isError.toggle()
+                    self.isError = true
                 }
             } receiveValue: { (cityModel: CityModel) in
                 self.cityData = cityModel.data
             }
             .store(in: &cancellables)
+
     }
     
 }
