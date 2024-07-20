@@ -71,13 +71,17 @@ class MainViewModel: NSObject, ObservableObject {
                     }
                 }
             } receiveValue: { currentLocation in
-                self.getCurrentCityFromLocation(currentLocation)
+                self.reverseGeocode(location: currentLocation)
+                
+                let currentLatitude = currentLocation.coordinate.latitude
+                let currentLongitude = currentLocation.coordinate.longitude
+                self.fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
             }
             .store(in: &cancellables)
     }
     
-    private func getCurrentCityFromLocation(_ currentLocation: CLLocation) {
-        CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
+    private func reverseGeocode(location: CLLocation) {
+        CLGeocoder().reverseGeocodeLocation(location, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
             guard let self = self else { return }
             
             if error != nil {
@@ -92,11 +96,6 @@ class MainViewModel: NSObject, ObservableObject {
             
             self.currentCity = city
         }
-        
-        let currentLatitude = currentLocation.coordinate.latitude
-        let currentLongitude = currentLocation.coordinate.longitude
-        
-        self.fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
     }
     
     private func showAlert(errorMessage: String) {
