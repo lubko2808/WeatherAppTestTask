@@ -65,7 +65,6 @@ struct MainView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-//                        chosenCity = nil
                         showCitySearchView = true
                     } label: {
                         cityLabel

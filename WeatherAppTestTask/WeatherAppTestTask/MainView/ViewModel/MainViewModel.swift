@@ -22,7 +22,6 @@ struct DayForecast {
 
 class MainViewModel: NSObject, ObservableObject {
     
-    
     private let apiClinet = URLSessionAPIClient<WeatherEndpoint>()
     private let weatherDataFormatter = WeatherDataFormatter()
 
@@ -139,12 +138,10 @@ class MainViewModel: NSObject, ObservableObject {
     }
     
     func fetchWeatherForCity(cityName: String) {
-        
         geocoder(city: cityName) { [weak self] latitude, longitude in
             guard let self = self else { return }
             self.fetchWeather(latitude: latitude, longitude: longitude)
         }
-        
     }
     
     private func fetchWeather(latitude: Double, longitude: Double) {
@@ -160,10 +157,7 @@ class MainViewModel: NSObject, ObservableObject {
                 self?.handleData(dailyWeather: dailyWeatherModel, hourlyWeather: hourlyWeatherModel)
             }
             .store(in: &cancellables)
-        
     }
-    
-    
-    
+  
 }
 
