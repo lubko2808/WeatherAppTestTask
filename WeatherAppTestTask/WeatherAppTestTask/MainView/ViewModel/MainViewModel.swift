@@ -70,29 +70,32 @@ class MainViewModel: NSObject, ObservableObject {
                     }
                 }
             } receiveValue: { currentLocation in
-                CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
-                    guard let self = self else { return }
-                    
-                    if let error {
-                        self.showAlert(errorMessage: "Can't obtain your current city")
-                        return
-                    }
-                    
-                    guard let city = placemarks?.first?.locality else {
-                        self.showAlert(errorMessage: "Can't obtain your current city")
-                        return
-                    }
-                    
-                    self.currentCity = city
-                }
-                
-                let currentLatitude = currentLocation.coordinate.latitude
-                let currentLongitude = currentLocation.coordinate.longitude
-                
-                self.fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
+                self.getCurrentCityFromLocation(currentLocation)
             }
             .store(in: &cancellables)
-
+    }
+    
+    private func getCurrentCityFromLocation(_ currentLocation: CLLocation) {
+        CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
+            guard let self = self else { return }
+            
+            if error != nil {
+                self.showAlert(errorMessage: "Can't obtain your current city")
+                return
+            }
+            
+            guard let city = placemarks?.first?.locality else {
+                self.showAlert(errorMessage: "Can't obtain your current city")
+                return
+            }
+            
+            self.currentCity = city
+        }
+        
+        let currentLatitude = currentLocation.coordinate.latitude
+        let currentLongitude = currentLocation.coordinate.longitude
+        
+        self.fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
     }
     
     private func showAlert(errorMessage: String) {
