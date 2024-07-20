@@ -82,6 +82,9 @@ struct MainView: View {
                 CitySearchView(chosenCity: $viewModel.currentCity)
             }
         }
+        .onAppear {
+            self.viewModel.getLocation()
+        }
     }
     
     private var contentUnavailableView: some View {

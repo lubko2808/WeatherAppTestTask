@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3E4FCFDF2C4ADF1D00FC298A /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E4FCFDE2C4ADF1D00FC298A /* APIClient.swift */; };
+		3E6434B72C4BB0ED009600FC /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6434B62C4BB0ED009600FC /* LocationService.swift */; };
 		3E6A1AA82C4A57B7008D8BB3 /* NavigationBarAppearanceModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6A1AA72C4A57B7008D8BB3 /* NavigationBarAppearanceModifier.swift */; };
 		3E6A1AAE2C4A5BB6008D8BB3 /* UIView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6A1AAD2C4A5BB6008D8BB3 /* UIView+Extension.swift */; };
 		3E6A1AB02C4A6DDD008D8BB3 /* DailyWeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6A1AAF2C4A6DDD008D8BB3 /* DailyWeatherModel.swift */; };
@@ -29,6 +30,7 @@
 
 /* Begin PBXFileReference section */
 		3E4FCFDE2C4ADF1D00FC298A /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		3E6434B62C4BB0ED009600FC /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		3E6A1AA72C4A57B7008D8BB3 /* NavigationBarAppearanceModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationBarAppearanceModifier.swift; sourceTree = "<group>"; };
 		3E6A1AAD2C4A5BB6008D8BB3 /* UIView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extension.swift"; sourceTree = "<group>"; };
 		3E6A1AAF2C4A6DDD008D8BB3 /* DailyWeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyWeatherModel.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 			isa = PBXGroup;
 			children = (
 				3ED355642C495D3200256C4C /* WeatherDataFormatter.swift */,
+				3E6434B62C4BB0ED009600FC /* LocationService.swift */,
 				3E6A1AA72C4A57B7008D8BB3 /* NavigationBarAppearanceModifier.swift */,
 				3E6A1AAD2C4A5BB6008D8BB3 /* UIView+Extension.swift */,
 			);
@@ -266,6 +269,7 @@
 				3E6A1AA82C4A57B7008D8BB3 /* NavigationBarAppearanceModifier.swift in Sources */,
 				3E6A1ABA2C4A856E008D8BB3 /* WeatherTypeIconView.swift in Sources */,
 				3EC29DF42C496F8300F4402F /* CitySearchView.swift in Sources */,
+				3E6434B72C4BB0ED009600FC /* LocationService.swift in Sources */,
 				3E6A1ABC2C4A86ED008D8BB3 /* HourlyWeatherModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

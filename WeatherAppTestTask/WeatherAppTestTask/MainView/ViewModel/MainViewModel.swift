@@ -24,9 +24,7 @@ class MainViewModel: NSObject, ObservableObject {
     
     private let apiClinet = APIClient()
     private let weatherDataFormatter = WeatherDataFormatter()
-    private let locationManager = CLLocationManager()
-    
-    var isAuthorized = false
+
     var errorMessage: String? = nil
     @Published var isError = false
     
@@ -41,35 +39,63 @@ class MainViewModel: NSObject, ObservableObject {
     @Published var dailyForecast: [DayForecast] = []
     
     private var cancellables = Set<AnyCancellable>()
-
+    
+    private let locationService = LocationService()
+    
     override init() {
         super.init()
-        locationManager.delegate = self
-        startLocationServices()
-        
+
         $currentCity
             .dropFirst(2)
             .sink { city in
-                print("here")
-                print(city)
                 self.fetchWeatherForCity(cityName: city)
             }
             .store(in: &cancellables)
-        
     }
     
-    func startLocationServices() {
-        if locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse {
-            locationManager.startUpdatingLocation()
-            isAuthorized = true
-        } else {
-            isAuthorized = false
-            locationManager.requestWhenInUseAuthorization()
-        }
-    }
+    func getLocation() {
+        locationService.getUserLocation()
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                switch completion {
+                case .finished: break
+                case .failure(let error):
+                    switch error {
+                    case .authorizationDenied:
+                        self.isContentAvailable = false
+                        self.isDataReady = false
+                        self.dailyForecast = []
+                    case .couldNotFetchLocation:
+                        self.showAlert(errorMessage: error.localizedDescription)
+                    }
+                }
+            } receiveValue: { currentLocation in
+                CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
+                    guard let self = self else { return }
+                    
+                    if let error {
+                        self.showAlert(errorMessage: "Can't obtain your current city")
+                        return
+                    }
+                    
+                    guard let city = placemarks?.first?.locality else {
+                        self.showAlert(errorMessage: "Can't obtain your current city")
+                        return
+                    }
+                    
+                    self.currentCity = city
+                }
+                
+                let currentLatitude = currentLocation.coordinate.latitude
+                let currentLongitude = currentLocation.coordinate.longitude
+                
+                self.fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
+            }
+            .store(in: &cancellables)
 
+    }
     
-    private func handleError(errorMessage: String) {
+    private func showAlert(errorMessage: String) {
         self.errorMessage = errorMessage
         self.isError = true
         isContentAvailable = false
@@ -97,7 +123,7 @@ class MainViewModel: NSObject, ObservableObject {
             guard let self = self else { return }
             
             if error != nil {
-                self.handleError(errorMessage: "Could not get information about this city")
+                self.showAlert(errorMessage: "Could not get information about this city")
                 return
             }
             
@@ -115,6 +141,7 @@ class MainViewModel: NSObject, ObservableObject {
             guard let self = self else { return }
             self.fetchWeather(latitude: latitude, longitude: longitude)
         }
+        
     }
     
     private func fetchWeather(latitude: Double, longitude: Double) {
@@ -124,7 +151,7 @@ class MainViewModel: NSObject, ObservableObject {
                 switch completion {
                 case .finished: break
                 case .failure(let error):
-                    self?.handleError(errorMessage: error.localizedDescription)
+                    self?.showAlert(errorMessage: error.localizedDescription)
                 }
             } receiveValue: { [weak self] (dailyWeatherModel, hourlyWeatherModel) in
                 self?.handleData(dailyWeather: dailyWeatherModel, hourlyWeather: hourlyWeatherModel)
@@ -134,61 +161,3 @@ class MainViewModel: NSObject, ObservableObject {
     
 }
 
-// MARK: - CLLocationManagerDelegate
-extension MainViewModel: CLLocationManagerDelegate {
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let currentLocation = locationManager.location else {
-            self.handleError(errorMessage: "Can't obtain current location")
-            return
-        }
-//        locationManager.stopUpdatingLocation()
-        
-        CLGeocoder().reverseGeocodeLocation(currentLocation, preferredLocale: Locale(identifier: "en")) { [weak self] (placemarks, error) in
-            guard let self = self else { return }
-            
-            if let error {
-                print("error: \(error.localizedDescription)")
-                self.handleError(errorMessage: error.localizedDescription)
-                return
-            }
-            
-            guard let city = placemarks?.first?.locality else {
-                self.handleError(errorMessage: "Can't obtain current city")
-                return
-            }
-            
-            self.currentCity = city
-        }
-        
-        let currentLatitude = currentLocation.coordinate.latitude
-        let currentLongitude = currentLocation.coordinate.longitude
-        
-        fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        print(error.localizedDescription)
-        isContentAvailable = false
-        isDataReady = false
-        self.dailyForecast = []
-        self.handleError(errorMessage: "Could not fetch your location")
-    }
-    
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        switch manager.authorizationStatus {
-        case .authorizedAlways, .authorizedWhenInUse:
-            isAuthorized = true
-            manager.requestLocation()
-        case .notDetermined:
-            isAuthorized = false
-            manager.requestWhenInUseAuthorization()
-        case .denied:
-            isAuthorized = false
-        default:
-            isAuthorized = true
-            startLocationServices()
-        }
-    }
-    
-}
