@@ -46,7 +46,7 @@ class MainViewModel: NSObject, ObservableObject {
         super.init()
 
         $currentCity
-            .dropFirst(2)
+            .filter { !$0.isEmpty }
             .sink { city in
                 self.fetchWeatherForCity(cityName: city)
             }
@@ -71,10 +71,6 @@ class MainViewModel: NSObject, ObservableObject {
                 }
             } receiveValue: { currentLocation in
                 self.reverseGeocode(location: currentLocation)
-                
-                let currentLatitude = currentLocation.coordinate.latitude
-                let currentLongitude = currentLocation.coordinate.longitude
-                self.fetchWeather(latitude: currentLatitude, longitude: currentLongitude)
             }
             .store(in: &cancellables)
     }
